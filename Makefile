@@ -6,8 +6,8 @@ SRC = ./src
 
 all: libgeo clean_apps myapps
 
-libgeo: #\
-	#$(OBJ)/float_vector.o \
+libgeo: \
+	$(OBJ)/image_manager.o \
 	#$(OBJ)/mytime.o
 
 myapps: \
@@ -15,10 +15,10 @@ myapps: \
 	#$(BIN)/app_com_mytime
 
 $(OBJ)/%.o: $(SRC)/%.cpp $(INCLUDE)/%.h
-	g++ -c $< -I $(INCLUDE) -o $@
+	g++ -c $< -I $(INCLUDE) -o $@ 
 
 $(BIN)/%: $(APPS)/%.cpp
-	g++ $< -I $(INCLUDE) -o $@
+	g++ `Magick++-config --cxxflags --cppflags` $< -I $(INCLUDE) $(OBJ)/*.o -o $@ `Magick++-config --ldflags --libs`
 
 run:
 	$(BIN)/main
