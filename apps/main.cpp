@@ -7,20 +7,21 @@
 #include <iostream>
 #include "Magick++.h"
 
-bool hit_sphere(const point3& center, double radius, const ray& r) {
+double hit_sphere(const point3& center, double radius, const ray& r) {
     vec3 oc = r.origin() - center;
-    auto a = dot(r.direction(), r.direction());
-    auto b = 2.0 * dot(oc, r.direction());
-    auto c = dot(oc, oc) - radius*radius;
-    auto discriminant = b*b - 4*a*c;
-    return (discriminant >= 0);
+    auto a = r.direction().length_squared();
+    auto half_b = dot(oc, r.direction());
+    auto c = oc.length_squared() - radius*radius;
+    auto discriminant = half_b*half_b - a*c;
+
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-half_b - sqrt(discriminant) ) / a;
+    }
 }
 
-Magick::ColorRGB ray_color(const ray& r, triangle& t) {
-    if (t.hit(r)) {
-        return Magick::ColorRGB(1, 0, 0);
-    }
-
+Magick::ColorRGB background_color(const ray& r) {
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     vec3 v = (1.0-a)*vec3(1.0, 1.0, 1.0) + a*vec3(0.5, 0.7, 1.0);
@@ -29,20 +30,28 @@ Magick::ColorRGB ray_color(const ray& r, triangle& t) {
 }
 
 Magick::ColorRGB ray_color(const ray& r) {
-    if (hit_sphere(point3(0,0,-1), 0.5, r)) {
+    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
+    if (t > 0.0) {
+        vec3 N = unit_vector(r.at(t) - vec3(0,0,-1));
+        vec3 color = 0.5*vec3(N.x()+1, N.y()+1, N.z()+1);
+        return Magick::ColorRGB(color.x(), color.y(), color.z());
+    }
+
+    return background_color(r);
+}
+
+Magick::ColorRGB ray_color(const ray& r, triangle& t) {
+    if (t.hit(r)) {
         return Magick::ColorRGB(1, 0, 0);
     }
 
-    vec3 unit_direction = unit_vector(r.direction());
-    auto a = 0.5*(unit_direction.y() + 1.0);
-    vec3 v = (1.0-a)*vec3(1.0, 1.0, 1.0) + a*vec3(0.5, 0.7, 1.0);
-
-    return Magick::ColorRGB(v.x(), v.y(), v.z());
+    return background_color(r);
 }
+
 
 int main() {
     Magick::InitializeMagick("");
-    ObjLoader objLoader = ObjLoader();
+    //ObjLoader objLoader = ObjLoader();
 
     auto aspect_ratio = 16.0 / 9.0;
     int image_width = 400;
@@ -72,22 +81,25 @@ int main() {
                              - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    std::vector<triangle> triangles = objLoader.readObj("/home/matheus-fvp/Documentos/git/ray-tracing/assets/objects/read/seahorse.obj", camera_center);
+    //std::vector<triangle> triangles = objLoader.readObj("/home/matheus-fvp/Documentos/git/ray-tracing/assets/objects/read/seahorse.obj", camera_center);
     for (int j = 0; j < image_height; ++j) {
         for (int i = 0; i < image_width; ++i) {
             auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            for(auto triangle : triangles) {
+            /*for(auto triangle : triangles) {
                 bool is_hit = triangle.hit(r);
                 Magick::ColorRGB pixel_color = ray_color(r, triangle);
                 image.pixelColor(i, j, pixel_color);
                 if(is_hit) break;
-            }
+            }*/
+
+            Magick::ColorRGB pixel_color = ray_color(r);
+            image.pixelColor(i, j, pixel_color);
         }
     }
 
-    image.write("./assets/images/seahorse.png");
+    image.write("./assets/images/sphere.png");
     return 0;
 }
