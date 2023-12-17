@@ -1,9 +1,10 @@
+#include "rtweekend.h"
+
 #include "face.h"
 #include "hittable.h"
 #include "hittable_list.h"
 #include "obj_loader.h"
 #include "ray.h"
-#include "rtweekend.h"
 #include "sphere.h"
 #include "triangle.h"
 #include "vec3.h"
@@ -21,7 +22,7 @@ Magick::ColorRGB background_color(const ray& r) {
 
 Magick::ColorRGB ray_color(const ray& r, const hittable& world) {
     hit_record rec;
-    if (world.hit(r, 0, infinity, rec)) {
+    if (world.hit(r, interval(0, infinity), rec)) {
         vec3 color = 0.5 * (rec.normal + vec3(1,1,1));
         return Magick::ColorRGB(color.x(), color.y(), color.z());
     }
