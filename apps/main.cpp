@@ -1,5 +1,7 @@
-#include "image_manager.h"
+#include "face.h"
+#include "obj_loader.h"
 #include "ray.h"
+#include "triangle.h"
 #include "vec3.h"
 
 #include <iostream>
@@ -12,6 +14,18 @@ bool hit_sphere(const point3& center, double radius, const ray& r) {
     auto c = dot(oc, oc) - radius*radius;
     auto discriminant = b*b - 4*a*c;
     return (discriminant >= 0);
+}
+
+Magick::ColorRGB ray_color(const ray& r, triangle& t) {
+    if (t.hit(r)) {
+        return Magick::ColorRGB(1, 0, 0);
+    }
+
+    vec3 unit_direction = unit_vector(r.direction());
+    auto a = 0.5*(unit_direction.y() + 1.0);
+    vec3 v = (1.0-a)*vec3(1.0, 1.0, 1.0) + a*vec3(0.5, 0.7, 1.0);
+
+    return Magick::ColorRGB(v.x(), v.y(), v.z());
 }
 
 Magick::ColorRGB ray_color(const ray& r) {
@@ -28,8 +42,6 @@ Magick::ColorRGB ray_color(const ray& r) {
 
 int main() {
     Magick::InitializeMagick("");
-
-    // Image
 
     auto aspect_ratio = 16.0 / 9.0;
     int image_width = 400;
@@ -59,18 +71,19 @@ int main() {
                              - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
+    triangle t = triangle(vec3(-0.5, -1, -1.0), vec3(0.5, -1, -1), vec3(0.0, 0.5, -1.0));
+
     for (int j = 0; j < image_height; ++j) {
         for (int i = 0; i < image_width; ++i) {
             auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            Magick::ColorRGB pixel_color = ray_color(r);
+            Magick::ColorRGB pixel_color = ray_color(r, t);
             image.pixelColor(i, j, pixel_color);
         }
     }
 
-    image.write("./assets/images/teste.png");
-
+    image.write("./assets/images/triangle.png");
     return 0;
 }
