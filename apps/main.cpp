@@ -42,6 +42,7 @@ Magick::ColorRGB ray_color(const ray& r) {
 
 int main() {
     Magick::InitializeMagick("");
+    ObjLoader objLoader = ObjLoader();
 
     auto aspect_ratio = 16.0 / 9.0;
     int image_width = 400;
@@ -71,19 +72,22 @@ int main() {
                              - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    triangle t = triangle(vec3(-0.5, -1, -1.0), vec3(0.5, -1, -1), vec3(0.0, 0.5, -1.0));
-
+    std::vector<triangle> triangles = objLoader.readObj("/home/matheus-fvp/Documentos/git/ray-tracing/assets/objects/read/plane.obj", camera_center);
     for (int j = 0; j < image_height; ++j) {
         for (int i = 0; i < image_width; ++i) {
             auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            Magick::ColorRGB pixel_color = ray_color(r, t);
-            image.pixelColor(i, j, pixel_color);
+            for(auto triangle : triangles) {
+                bool is_hit = triangle.hit(r);
+                Magick::ColorRGB pixel_color = ray_color(r, triangle);
+                image.pixelColor(i, j, pixel_color);
+                if(is_hit) break;
+            }
         }
     }
 
-    image.write("./assets/images/triangle.png");
+    image.write("./assets/images/plane.png");
     return 0;
 }
