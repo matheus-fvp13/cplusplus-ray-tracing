@@ -72,7 +72,7 @@ int main() {
                              - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    std::vector<triangle> triangles = objLoader.readObj("/home/matheus-fvp/Documentos/git/ray-tracing/assets/objects/read/plane.obj", camera_center);
+    std::vector<triangle> triangles = objLoader.readObj("/home/matheus-fvp/Documentos/git/ray-tracing/assets/objects/read/seahorse.obj", camera_center);
     for (int j = 0; j < image_height; ++j) {
         for (int i = 0; i < image_width; ++i) {
             auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
@@ -88,6 +88,6 @@ int main() {
         }
     }
 
-    image.write("./assets/images/plane.png");
+    image.write("./assets/images/seahorse.png");
     return 0;
 }
