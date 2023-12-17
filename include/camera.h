@@ -4,6 +4,7 @@
 #include "rtweekend.h"
 
 #include "Magick++.h"
+#include "color.h"
 #include "hittable.h"
 
 #include <iostream>
@@ -12,6 +13,7 @@ class camera {
 public:
 double aspect_ratio = 1.0;  // Ratio of image width over height
 int    image_width  = 100;  // Rendered image width in pixel count
+int    samples_per_pixel = 10; // Count of random samples for each pixel
 
 void render(const hittable& world) {
     Magick::InitializeMagick("");
@@ -21,12 +23,14 @@ void render(const hittable& world) {
 
     for (int j = 0; j < image_height; ++j) {
         for (int i = 0; i < image_width; ++i) {
-            auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-            auto ray_direction = pixel_center - center;
-            ray r(center, ray_direction);
-
-            Magick::ColorRGB pixel_color = ray_color(r, world);
-            image.pixelColor(i, j, pixel_color);
+            color pixel_color(0,0,0);
+            for (int sample = 0; sample < samples_per_pixel; ++sample) {
+                ray r = get_ray(i, j);
+                pixel_color += ray_color(r, world);
+            }
+            color color_aux = write_color(pixel_color, samples_per_pixel);
+            Magick::ColorRGB color(color_aux.x(), color_aux.y(), color_aux.z());
+            image.pixelColor(i, j, color);
         }
     }
 
@@ -66,23 +70,41 @@ private:
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
 
-    Magick::ColorRGB background_color(const ray& r) {
-        vec3 unit_direction = unit_vector(r.direction());
-        auto a = 0.5*(unit_direction.y() + 1.0);
-        vec3 v = (1.0-a)*vec3(1.0, 1.0, 1.0) + a*vec3(0.5, 0.7, 1.0);
 
-        return Magick::ColorRGB(v.x(), v.y(), v.z());
+    ray get_ray(int i, int j) const {
+        // Get a randomly sampled camera ray for the pixel at location i,j.
+
+        auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
+        auto pixel_sample = pixel_center + pixel_sample_square();
+
+        auto ray_origin = center;
+        auto ray_direction = pixel_sample - ray_origin;
+
+        return ray(ray_origin, ray_direction);
     }
 
-    Magick::ColorRGB ray_color(const ray& r, const hittable& world) {
+    vec3 pixel_sample_square() const {
+        // Returns a random point in the square surrounding a pixel at the origin.
+        auto px = -0.5 + random_double();
+        auto py = -0.5 + random_double();
+        return (px * pixel_delta_u) + (py * pixel_delta_v);
+    }
+
+    color background_color(const ray& r) {
+        vec3 unit_direction = unit_vector(r.direction());
+        auto a = 0.5*(unit_direction.y() + 1.0);
+        return (1.0-a)*vec3(1.0, 1.0, 1.0) + a*vec3(0.5, 0.7, 1.0);
+    }
+
+    color ray_color(const ray& r, const hittable& world) {
         hit_record rec;
         if (world.hit(r, interval(0, infinity), rec)) {
-            vec3 color = 0.5 * (rec.normal + vec3(1,1,1));
-            return Magick::ColorRGB(color.x(), color.y(), color.z());
+            return 0.5 * (rec.normal + vec3(1,1,1));
         }
 
         return background_color(r);
     }
+
 };
 
 #endif
