@@ -14,6 +14,7 @@ public:
 double aspect_ratio = 1.0;  // Ratio of image width over height
 int    image_width  = 100;  // Rendered image width in pixel count
 int    samples_per_pixel = 10; // Count of random samples for each pixel
+int    max_depth         = 10;
 
 void render(const hittable& world) {
     Magick::InitializeMagick("");
@@ -26,7 +27,7 @@ void render(const hittable& world) {
             color pixel_color(0,0,0);
             for (int sample = 0; sample < samples_per_pixel; ++sample) {
                 ray r = get_ray(i, j);
-                pixel_color += ray_color(r, world);
+                pixel_color += ray_color(r, max_depth, world);
             }
             color color_aux = write_color(pixel_color, samples_per_pixel);
             Magick::ColorRGB color(color_aux.x(), color_aux.y(), color_aux.z());
@@ -34,7 +35,7 @@ void render(const hittable& world) {
         }
     }
 
-    image.write("./assets/images/sphere.png");
+    image.write("./assets/images/sphere-diffuse.png");
 
 }
 
@@ -90,16 +91,20 @@ private:
         return (px * pixel_delta_u) + (py * pixel_delta_v);
     }
 
-    color background_color(const ray& r) {
+    color background_color(const ray& r) const{
         vec3 unit_direction = unit_vector(r.direction());
         auto a = 0.5*(unit_direction.y() + 1.0);
         return (1.0-a)*vec3(1.0, 1.0, 1.0) + a*vec3(0.5, 0.7, 1.0);
     }
 
-    color ray_color(const ray& r, const hittable& world) {
+    color ray_color(const ray& r, int depth, const hittable& world) const {
         hit_record rec;
-        if (world.hit(r, interval(0, infinity), rec)) {
-            return 0.5 * (rec.normal + vec3(1,1,1));
+        if (depth <= 0)
+            return color(0,0,0);
+
+        if (world.hit(r, interval(0.001, infinity), rec)) {
+            vec3 direction = rec.normal + random_unit_vector();
+            return 0.5 * ray_color(ray(rec.p, direction), depth-1, world);
         }
 
         return background_color(r);
