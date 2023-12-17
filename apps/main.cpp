@@ -1,25 +1,15 @@
 #include "face.h"
+#include "hittable.h"
+#include "hittable_list.h"
 #include "obj_loader.h"
 #include "ray.h"
+#include "rtweekend.h"
+#include "sphere.h"
 #include "triangle.h"
 #include "vec3.h"
 
 #include <iostream>
 #include "Magick++.h"
-
-double hit_sphere(const point3& center, double radius, const ray& r) {
-    vec3 oc = r.origin() - center;
-    auto a = r.direction().length_squared();
-    auto half_b = dot(oc, r.direction());
-    auto c = oc.length_squared() - radius*radius;
-    auto discriminant = half_b*half_b - a*c;
-
-    if (discriminant < 0) {
-        return -1.0;
-    } else {
-        return (-half_b - sqrt(discriminant) ) / a;
-    }
-}
 
 Magick::ColorRGB background_color(const ray& r) {
     vec3 unit_direction = unit_vector(r.direction());
@@ -29,11 +19,10 @@ Magick::ColorRGB background_color(const ray& r) {
     return Magick::ColorRGB(v.x(), v.y(), v.z());
 }
 
-Magick::ColorRGB ray_color(const ray& r) {
-    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
-    if (t > 0.0) {
-        vec3 N = unit_vector(r.at(t) - vec3(0,0,-1));
-        vec3 color = 0.5*vec3(N.x()+1, N.y()+1, N.z()+1);
+Magick::ColorRGB ray_color(const ray& r, const hittable& world) {
+    hit_record rec;
+    if (world.hit(r, 0, infinity, rec)) {
+        vec3 color = 0.5 * (rec.normal + vec3(1,1,1));
         return Magick::ColorRGB(color.x(), color.y(), color.z());
     }
 
@@ -61,6 +50,14 @@ int main() {
     image_height = (image_height < 1) ? 1 : image_height;
 
     Magick::Image image(Magick::Geometry(image_width, image_height), "white");
+
+    // World
+
+    hittable_list world;
+
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+
     // Camera
 
     auto focal_length = 1.0;
@@ -95,7 +92,7 @@ int main() {
                 if(is_hit) break;
             }*/
 
-            Magick::ColorRGB pixel_color = ray_color(r);
+            Magick::ColorRGB pixel_color = ray_color(r, world);
             image.pixelColor(i, j, pixel_color);
         }
     }
