@@ -38,9 +38,11 @@ public:
                 
             }
 
+            resizingObj(vertices);
+
             vec3 objCenter = calculateObjCenter(vertices);
             vec3 translationDirection = point - objCenter;
-            translationDirection[2] += -1.5;
+            //translationDirection[2] += -1.5;
 
             for(auto& vertex : vertices) {
                 vertex = vertex + translationDirection;
