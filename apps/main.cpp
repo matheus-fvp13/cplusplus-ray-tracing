@@ -13,25 +13,17 @@
 #include <iostream>
 #include "Magick++.h"
 
-
-
-/*Magick::ColorRGB ray_color(const ray& r, triangle& t) {
-    if (t.hit(r)) {
-        return Magick::ColorRGB(1, 0, 0);
-    }
-
-    return background_color(r);
-}*/
-
-
 int main() {
+
+    ObjLoader objLoader;
+    std::vector<triangle> triangles = objLoader.readObj("./assets/objects/read/seahorse.obj", vec3(0, 0, 0));
 
     // World
 
     hittable_list world;
-
-    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
-    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+    for(auto& t: triangles) {
+        world.add(make_shared<triangle>(t));
+    }
 
     // Camera
 
@@ -42,7 +34,8 @@ int main() {
     cam.samples_per_pixel = 100;
     cam.max_depth         = 50;
 
-    cam.render(world);
+    Magick::Image image = cam.render(world);
+    image.write("./assets/images/seahorse-diffuse.png");
 
     return 0;
 }

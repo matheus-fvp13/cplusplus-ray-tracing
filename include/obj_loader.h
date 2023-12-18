@@ -25,7 +25,6 @@ public:
                 std::vector<std::string> tokens;
                 if(line != "") {
                     split(line, tokens, ' ');
-                    //std::cout << tokens[0] << std::endl;
                     if(tokens[0] == "v") {
                         vertices.push_back(parseVec3(tokens));
                     }else if(tokens[0] == "vn") {
@@ -48,7 +47,7 @@ public:
             }
             
             fileReader.close();
-            return facesToTriangles(faces, vertices);
+            return facesToTriangles(faces, vertices, normais);
 
         }catch(const std::exception& e) {
             std::cerr << "Exceção capturada: " << e.what() << std::endl;
@@ -87,10 +86,14 @@ private:
         return Face(v[0], v[1], v[2]);
     }
 
-    std::vector<triangle> facesToTriangles(std::vector<Face> faces, std::vector<vec3> vertices) const {
+    std::vector<triangle> facesToTriangles(std::vector<Face> faces, std::vector<vec3> vertices, std::vector<vec3> normais) const {
         std::vector<triangle> triangles;
         for(auto& face : faces) {
-            triangles.push_back(triangle(vertices[face.v1], vertices[face.v2], vertices[face.v3]));
+            triangle t(vertices[face.v1], vertices[face.v2], vertices[face.v3]);
+            t.n0 = normais[face.v1];
+            t.n1 = normais[face.v2];
+            t.n2 = normais[face.v3];
+            triangles.push_back(t);
         }
         return triangles;
     }

@@ -16,7 +16,7 @@ int    image_width  = 100;  // Rendered image width in pixel count
 int    samples_per_pixel = 10; // Count of random samples for each pixel
 int    max_depth         = 10;
 
-void render(const hittable& world) {
+Magick::Image render(const hittable& world) {
     Magick::InitializeMagick("");
     initialize();
 
@@ -35,7 +35,7 @@ void render(const hittable& world) {
         }
     }
 
-    image.write("./assets/images/sphere-diffuse.png");
+    return image;
 
 }
 
@@ -70,7 +70,6 @@ private:
             center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
-
 
     ray get_ray(int i, int j) const {
         // Get a randomly sampled camera ray for the pixel at location i,j.
