@@ -6,8 +6,9 @@
 
 #include <iostream>
 
-using color = vec3;
+using color = vec3; // Define color as an alias for vec3
 
+// Function to adjust and return the adjusted color
 color write_color(color pixel_color, int samples_per_pixel) {
     auto r = pixel_color.x();
     auto g = pixel_color.y();
