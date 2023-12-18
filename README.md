@@ -17,7 +17,7 @@ Throughout the project, specific classes were implemented for each component tha
 
 ### Utility Files
 - [color](./docs/color.md): The `color` is represented as an alias for the `vec3` class, indicating that a color is treated as a three-dimensional vector.
-- [color](./docs/rtweekend.md): The `rtweekend` header provides utility functions, constants, and common headers for a Ray Tracing application.
+- [rtweekend](./docs/rtweekend.md): The `rtweekend` header provides utility functions, constants, and common headers for a Ray Tracing application.
 
 ## Tools used
 - C++
