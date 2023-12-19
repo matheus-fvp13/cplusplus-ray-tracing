@@ -9,6 +9,7 @@ Throughout the project, specific classes were implemented for each component tha
 - [hittable and hit_record](./docs/hittable.md): The `hittable` class is an abstract base class for hittable objects, and the `hit_record` class represents information about a ray-object intersection.
 - [hittable_list](./docs/hittable_list.md): The `hittable_list` class is a container class for managing a list of hittable objects. It inherits from the `hittable` class, indicating its capability to be used in ray-tracing scenarios.
 - [interval](./docs/interval.md): The `interval` class represents a one-dimensional interval `[min, max]`.
+- [material](./docs/material.md): The `material` class is an abstract base class representing a generic material in a ray tracing system. It provides a virtual function for material scattering that needs to be implemented by its derived classes.
 - [ObjLoader](./docs/obj_loader.md): The `ObjLoader` class is designed to read OBJ files, adjust the size of the loaded object, and return a vector of triangles representing the object. This class is particularly useful in computer graphics applications for loading 3D models..
 - [ray](./docs/ray.md): The `ray` class represents a ray in 3D space, commonly used in ray tracing and rendering applications.
 - [sphere](./docs/sphere.md): The `sphere` class represents a three-dimensional sphere and inherits from the `hittable` class, making it suitable for use in ray-tracing scenarios.
@@ -60,7 +61,21 @@ Throughout the project, various images were generated to test the functionality 
         <img src="./assets/images/activity05-viewpoint1.png" width="100%" alt="Activity 05 - Diffuse Materials and different viewpoints">
         <figcaption style="text-align: center">Activity 05 - Diffuse Materials and different viewpoints</figcaption>
     </figure>
+    <figure>
+        <img src="./assets/images/seahorse-metal.png" width="100%" alt="Activity 06 - metal objects material">
+        <figcaption style="text-align: center">Activity 06 - metal seahorse object material</figcaption>
+    </figure>
+    <figure>
+        <img src="./assets/images/activity06.png" width="100%" alt="Activity 06 - glass and metal objects Materials">
+        <figcaption style="text-align: center">Activity 06 - Glass and metal objects Materials</figcaption>
+    </figure>
 </div>
+
+##Referências
+- [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+- [Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
+- [https://github.com/drobilc/RayTracing](https://github.com/drobilc/RayTracing)
+- [Interpolating in a Triangle](https://codeplea.com/triangular-interpolation)
 
 ## Autor
 Matheus Fernando Vieira Pinto.

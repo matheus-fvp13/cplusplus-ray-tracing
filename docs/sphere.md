@@ -4,8 +4,8 @@ The `sphere` class represents a three-dimensional sphere and inherits from the `
 
 ## Constructor
 
-### `sphere(point3 _center, double _radius)`
-- Initializes the sphere with a specified center (`_center`) and radius (`_radius`).
+### `sphere(point3 _center, double _radius, shared_ptr<material> _material) : center(_center), radius(_radius), mat(_material)`
+- Initializes the sphere with a specified center (`_center`), radius (`_radius`) and material.
 
 ## Member Functions
 
