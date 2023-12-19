@@ -92,6 +92,12 @@ The `vec3` class represents a 3D vector or point in space.
 ### `inline vec3 random_on_hemisphere(const vec3& normal)`
 - Generates a random vector on the hemisphere with a given normal.
 
+### `inline vec3 reflect(const vec3& v, const vec3& n)`
+- Calculates the reflection vector of a ray incident on a surface
+
+### `inline vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat)`
+- Calculates the refraction vector of a ray incident on a transparent surface.
+
 ## Alias
 
 ### `using point3 = vec3`

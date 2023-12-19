@@ -11,6 +11,7 @@ class triangle : public hittable
 public:
     vec3 v0, v1, v2; // Triangle vertices
     vec3 n0, n1, n2; // Normals at each vertex
+    shared_ptr<material> mat;
 
     triangle(const vec3& v0, const vec3& v1, const vec3& v2): v0(v0), v1(v1), v2(v2) {}
 
@@ -55,6 +56,7 @@ public:
             vec3 interpolated_normal = unit_vector(barycentric[0] * n0 + barycentric[1] * n1 + barycentric[2] * n2);
             // Set face normal based on the interpolated normal
             rec.set_face_normal(r, interpolated_normal);
+            rec.mat = mat;
             return true;
         }
         return false;

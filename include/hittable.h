@@ -1,13 +1,16 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "ray.h"
+#include "rtweekend.h"
+
+class material;
 
 // Class representing information about a ray-object intersection
 class hit_record {
   public:
     point3 p; // Point of intersection
     vec3 normal; // Surface normal at the point of intersection
+    shared_ptr<material> mat;
     double t; // Parameter value along the ray where the intersection occurs
     bool front_face; // Indicates whether the intersection is from the front face
 

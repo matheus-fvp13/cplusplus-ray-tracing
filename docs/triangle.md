@@ -11,6 +11,7 @@ The `triangle` class inherits from the `hittable` class and represents a triangl
 
 - `vec3 v0, v1, v2`: Triangle vertices.
 - `vec3 n0, n1, n2`: Normals at each vertex.
+- `shared_ptr<material> mat`: The triangle material
 
 ## Member Functions
 
