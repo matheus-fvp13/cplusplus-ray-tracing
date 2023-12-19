@@ -14,27 +14,31 @@
 int main() {
 
    ObjLoader objLoader;
-   std::vector<triangle> seahorse = objLoader.readObj("./assets/objects/read/seahorse.obj", point3(0 , 0, -1.0));
-   //std::vector<triangle> cube = objLoader.readObj("./assets/objects/read/cube.obj", point3(1.0 , 0, -1.0));
+   //std::vector<triangle> seahorse = objLoader.readObj("./assets/objects/read/seahorse.obj", point3(0 , 0, -1.0));
+   //std::vector<triangle> cube = objLoader.readObj("./assets/objects/read/cube.obj", point3(0 , 0, -1.0));
    hittable_list world;
-   
+
    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-   auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
-   auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
+   auto material_center = make_shared<dielectric>(1.5);
+   auto material_left   = make_shared<dielectric>(1.5);
    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
 
-   //auto R = cos(pi/4);
+   world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
+   world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
+   world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
+   world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
-   for(auto& t: seahorse) {
+   /*for(auto& t: seahorse) {
       t.mat = material_left;
       world.add(make_shared<triangle>(t));
-   }
+   }*/
 
-    //for(auto& t: cube) {
-    //   world.add(make_shared<triangle>(t));
-    //}
+   /*for(auto& t: cube) {
+      t.mat = material_left;
+      world.add(make_shared<triangle>(t));
+   }*/
 
-    //world.add(make_shared<sphere>(point3( 0.0, 0.0, -1.0),   0.5));
+   //world.add(make_shared<sphere>(point3( 0.0, 0.0, -1.0),   0.5));
     
 
     camera cam;
@@ -61,7 +65,7 @@ int main() {
     cam2.vup      = vec3(0,1,0);*/
     
     Magick::Image image = cam.render(world);
-    image.write("./assets/images/seahorse-metal.png");
+    image.write("./assets/images/glass-sphere-metal.png");
 
     /*Magick::Image image2 = cam2.render(world);
     image2.write("./assets/images/activity05-viewpoints2.png");*/
