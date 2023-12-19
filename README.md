@@ -71,13 +71,14 @@ Throughout the project, various images were generated to test the functionality 
     </figure>
 </div>
 
-##Referências
+## References
+
 - [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
 - [Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
 - [https://github.com/drobilc/RayTracing](https://github.com/drobilc/RayTracing)
 - [Interpolating in a Triangle](https://codeplea.com/triangular-interpolation)
 
-## Autor
+## Author
 Matheus Fernando Vieira Pinto.
 
 https://www.linkedin.com/in/matheus-fvp/
